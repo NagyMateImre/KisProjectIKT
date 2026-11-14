@@ -14,7 +14,7 @@ $user = 'root';
 $pass = '';
 $db   = 'kisproject';
 $charset = 'utf8mb4';
-$port = '3307';
+$port = '3307'; // Ez csak azért kell mert nekem itthon 3307-es porton megy de a suliba az alap van ami 3306
 
 $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=$charset";
 
