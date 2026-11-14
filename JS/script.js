@@ -18,6 +18,21 @@ function NameValidator(){
     }
 }
 
+function PasswordValidator(password) {
+    if (password.length === 0) {
+        Password.style.background = "white";
+        return;
+    }
+
+    const regexPasswordValidator = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
+
+    if (regexPasswordValidator.test(password)) {
+        Password.style.background = "white";
+    } else {
+        Password.style.background = "red";
+    }
+}
+
 function EmailValidator(email) {
     const regexEmailValidator = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     const trimmedEmail = email.trim();
@@ -29,22 +44,32 @@ function EmailValidator(email) {
     }
 }
 
-
 function PhoneNumberValidator(number){
-    const regexPhoneNumberValidator = /^(?:\+36|06)(?:1|\d{2})\d{7,8}$/;
+    const regexPhoneNumberValidator = /^(?:\+36|06)(?:1|\d{2})\d{7,7}$/;
     if(Mobil.value.length === 0 || regexPhoneNumberValidator.test(number.replace(/[^\d+]/g, ''))){
         Mobil.style.background = "white";
-    } else {
-        Mobil.style.background = "red";
+    }
+    else{
+        Mobil.style.background = "red";   
     }
 }
 
-function CarValidator(){
-    console.log(CarRadio[0].checked);
+function CarValidator(CarRadio){
+    for (const radio of CarRadio) {
+        if (radio.checked) {
+            return radio.value;
+        }
+    }
+    return '';
 }
 
-function PCValidator(){
-console.log(PCRadio[0].checked);
+function PCValidator(PCRadio){
+    for (const radio of PCRadio) {
+        if (radio.checked) {
+            return radio.value;
+        }
+    }
+    return '';
 }
 
 function Reset(){
@@ -53,23 +78,34 @@ function Reset(){
 
 function SubmitForm(){
     if((Name.style.background === "white" && Email.style.background === "white" && Mobil.style.background === "white")&& (Name.value.length > 0 && Email.value.length > 0 && Mobil.value.length > 0 && Password.value.length > 0)){
-        fetch('http://localhost/KisProject/HTML/reg.php', {
+        
+        const formData = new FormData();
+        formData.append('nev', Name.value);
+        formData.append('loginName', LoginName.value);
+        formData.append('mobil', Mobil.value);
+        formData.append('email', Email.value);
+        formData.append('password', Password.value);
+        formData.append('car', CarValidator(CarRadio));
+        formData.append('pc', PCValidator(PCRadio));
+        formData.append('roles', roles.value);
+
+        fetch('http://localhost/KisProjectIKT/HTML/reg.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                nev: Name.value,
-                loginName: LoginName.value,
-                mobil: Mobil.value,
-                email: Email.value,
-                password: Password.value,
-                car: CarRadio[0].checked,
-                pc: PCRadio[0].checked,
-                roles: roles.value
-            })
+            body: formData
         })
-        Reset();
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if(data.status === "success") {
+                alert(data.message);
+                Reset();
+            } else {
+                alert("Hiba: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Hiba történt:', error);
+        });
     }
     else{
         alert("Nem megfelelő adatok! Kérlek ellenőrizd a mezőket!");
