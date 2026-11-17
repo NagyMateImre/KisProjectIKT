@@ -24,7 +24,7 @@ function PasswordValidator(password) {
         return;
     }
 
-    const regexPasswordValidator = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
+    const regexPasswordValidator = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
 
     if (regexPasswordValidator.test(password)) {
         Password.style.background = "white";
